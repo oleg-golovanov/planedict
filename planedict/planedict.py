@@ -176,7 +176,7 @@ class PlaneDict(MutableMapping):
         items = self.__dict__
 
         for key in self.__check_path__(path):
-            if not isinstance(items, dict):
+            if not isinstance(items, (dict, PlaneDict)):
                 raise KeyError(key)
             items = items[key]
 

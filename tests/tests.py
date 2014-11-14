@@ -46,6 +46,7 @@ class PlaneTest(unittest.TestCase):
 
     def test_getitem(self):
         path = ['key4', 'key5', 'key6']
+        flat = PlaneDict({'key1': PlaneDict({'key2': 'val2'})})
 
         self.assertEqual(
             self.flat[path],
@@ -62,6 +63,11 @@ class PlaneTest(unittest.TestCase):
             KeyError,
             self.flat.__getitem__,
             None
+        )
+
+        self.assertEqual(
+            flat['key1', 'key2'],
+            'val2'
         )
 
     def test_setitem(self):
