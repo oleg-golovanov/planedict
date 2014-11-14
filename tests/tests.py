@@ -58,6 +58,12 @@ class PlaneTest(unittest.TestCase):
             (path, [2])
         )
 
+        self.assertRaises(
+            KeyError,
+            self.flat.__getitem__,
+            None
+        )
+
     def test_setitem(self):
         path = 'key1', 'key2', 'key10'
         value = 1

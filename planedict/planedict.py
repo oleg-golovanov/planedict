@@ -151,6 +151,7 @@ EXAMPLES:
 
 
 from collections import MutableMapping, Iterable
+from types import NoneType
 
 
 class PlaneDict(MutableMapping):
@@ -307,7 +308,7 @@ class PlaneDict(MutableMapping):
 
             return result
 
-        if isinstance(path, (basestring, int, float, complex)):
+        if isinstance(path, (basestring, int, float, complex, NoneType)):
             return path,
         else:
             return tuple(seq_iter(path))
