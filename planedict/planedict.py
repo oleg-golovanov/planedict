@@ -156,17 +156,20 @@ from types import NoneType
 
 class PlaneDict(MutableMapping):
 
-    def __init__(self, seq=None, **kwargs):
+    __slots__ = (
+        '_factory',
+    )
+
+    def __init__(self, seq=None, _factory=dict, **kwargs):
         """
         Class constructor, takes the same arguments
         as the built-in dict class.
         """
 
-        if isinstance(seq, dict):
-            self.__dict__ = seq
-        else:
-            seq = seq if not seq is None else []
-            self.__dict__.update(seq, **kwargs)
+        self._factory = _factory
+        self.__dict__ = _factory()
+
+        self.__dict__.update(seq if seq else [], **kwargs)
 
     def __getitem__(self, path):
         """
@@ -199,8 +202,8 @@ class PlaneDict(MutableMapping):
             if len(p) == 1:
                 d[k] = value
             else:
-                if not isinstance(d.setdefault(k, {}), dict):
-                    d[k] = {}
+                if not isinstance(d.setdefault(k, self._factory()), dict):
+                    d[k] = self._factory()
                 set_key(d[k], p[1:])
 
         set_key(self.__dict__, path)
