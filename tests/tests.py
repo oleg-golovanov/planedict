@@ -2,6 +2,7 @@
 
 
 import unittest
+from collections import OrderedDict
 
 from planedict import PlaneDict
 
@@ -231,6 +232,37 @@ class PlaneTest(unittest.TestCase):
         self.assertNotEqual(
             self.flat,
             PlaneDict(ne)
+        )
+
+
+class PlaneOrderTest(unittest.TestCase):
+    def test_order(self):
+        order = OrderedDict([
+            ['key1', OrderedDict([
+                ['key2', 'val2'],
+                ['key3', 'val3']
+            ])],
+            ['key4', OrderedDict([
+                ['key5', OrderedDict([
+                    ['key6', 'val6'],
+                    ['key7', 'val7']
+                ])]
+            ])]
+        ])
+
+        items = (
+            (('key1', 'key2'), 'val2'),
+            (('key1', 'key3'), 'val3'),
+            (('key4', 'key5', 'key6'), 'val6'),
+            (('key4', 'key5', 'key7'), 'val7')
+        )
+        flat = PlaneDict(_factory=OrderedDict)
+        for k, v in items:
+            flat[k] = v
+
+        self.assertEqual(
+            flat.__dict__,
+            order
         )
 
 
