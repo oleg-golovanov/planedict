@@ -10,7 +10,7 @@ Supported methods:
     * native:
         * __check_path__(self, path)
     * overridden:
-        * __init__(self, seq=None, **kwargs)
+        * __init__(self, seq=None, _factory=dict, **kwargs)
         * __getitem__(self, path)
         * __setitem__(self, path, value)
         * __delitem__(self, path)
@@ -35,19 +35,21 @@ Supported methods:
         * iteritems(self)
 
 NOTES:
-    1. After removing value by path, if higher dicts will become
+    1. Constructor have _factory argument, it expects dict-like class (dict by default).
+       OrderedDict is useful to use.
+    2. After removing value by path, if higher dicts will become
        empty, they will be removed.
-    2. get method has stddict parameter. If it's True then method will return
+    3. get method has stddict parameter. If it's True then method will return
        built-in dict, it will return PlaneDict object else.
-    3. If PlaneDict object was passed to update method, it's a 'soft'
+    4. If PlaneDict object was passed to update method, it's a 'soft'
        update, i.e. the intersecting values will be overridden and the new
        values will be added.
        If standard dict passed to update method, it works as a
        standard update method.
-    4. __check_path__ method takes a sequence of keys.
+    5. __check_path__ method takes a sequence of keys.
        For example: __check_path__((1, [2, [3]], 4, (5, 6), (i for i in [7, 8])))
        returns (1, 2, 3, 4, (5, 6), 7, 8). As you can see from the
-       example below, tuple is not unfold, because tuple can be
+       example above, tuple is not unfold, because tuple can be
        a key of dict. So if you want to get a single-key tuple,
        you should do this:
             d[('key',),]
@@ -164,6 +166,8 @@ class PlaneDict(MutableMapping):
         """
         Class constructor, takes the same arguments
         as the built-in dict class.
+        _factory argument expects dict-like class (dict by default).
+        OrderedDict is useful to use.
         """
 
         self._factory = _factory
