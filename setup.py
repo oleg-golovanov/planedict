@@ -18,5 +18,11 @@ setup(
     zip_safe=False,
     platforms='any',
     long_description=__doc__,
-    test_suite='tests.tests'
+    test_suite='tests.tests',
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Software Development :: Libraries :: Python Modules'
+    ]
 )
