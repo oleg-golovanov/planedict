@@ -1,7 +1,8 @@
+from os.path import join, dirname
+
 from setuptools import setup
 
 from planedict import __version__
-from planedict.planedict import __doc__
 
 
 setup(
@@ -17,7 +18,7 @@ setup(
                 'value is value which allows in built-in dict.',
     zip_safe=False,
     platforms='any',
-    long_description=__doc__,
+    long_description=open(join(dirname(__file__), 'README.rst')).read(),
     test_suite='tests.tests',
     classifiers=[
         'License :: OSI Approved :: MIT License',
