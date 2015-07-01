@@ -1,5 +1,5 @@
 PlaneDict
-=========
+---------
 
 PlaneDict is a dict-like class which represents built-in dict class
 as a 'plane' structure, i.e. path-value pairs. Path is a tuple of keys,
