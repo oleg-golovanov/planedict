@@ -152,8 +152,21 @@ EXAMPLES:
 """
 
 
+from sys import version_info
 from collections import MutableMapping, Iterable
-from types import NoneType
+
+
+NoneType = type(None)
+
+
+PY3 = version_info.major == 3
+if PY3:
+    def iteritems(d):
+        return iter(d.items())
+    basestring = str
+else:
+    from operator import methodcaller
+    iteritems = methodcaller('iteritems')
 
 
 class PlaneDict(MutableMapping):
@@ -173,7 +186,7 @@ class PlaneDict(MutableMapping):
         self._factory = _factory
         self.__dict__ = _factory()
 
-        self.__dict__.update(seq if seq else [], **kwargs)
+        self.__dict__.update(seq or [], **kwargs)
 
     def __getitem__(self, path):
         """
@@ -256,7 +269,7 @@ class PlaneDict(MutableMapping):
             p = p or []
 
             # k - key, v - value
-            for k, v in d.iteritems():
+            for k, v in iteritems(d):
                 next_p = p + [k]
                 if isinstance(v, dict):
                     recurs_iter(v, next_p)
@@ -295,7 +308,8 @@ class PlaneDict(MutableMapping):
 
         return result
 
-    def __check_path__(self, path):
+    @staticmethod
+    def __check_path__(path):
         """
         If path is a instance of basestring, int,
         float or complex classes, it will return single-key

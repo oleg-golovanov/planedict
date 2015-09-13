@@ -2,9 +2,17 @@
 
 
 import unittest
+from sys import version_info
 from collections import OrderedDict
 
 from planedict import PlaneDict
+
+
+PY3 = version_info.major == 3
+
+
+def get_list(arg):
+    return list(arg) if PY3 else arg
 
 
 class PlaneTest(unittest.TestCase):
@@ -195,19 +203,19 @@ class PlaneTest(unittest.TestCase):
 
     def test_keys(self):
         self.assertEqual(
-            self.flat.keys(),
+            get_list(self.flat.keys()),
             [('key1', 'key3'), ('key1', 'key2'), ('key4', 'key5', 'key6')]
         )
 
     def test_values(self):
         self.assertEqual(
-            self.flat.values(),
+            get_list(self.flat.values()),
             ['val3', 'val2', 'val6']
         )
 
     def test_items(self):
         self.assertEqual(
-            self.flat.items(),
+            get_list(self.flat.items()),
             [(('key1', 'key3'), 'val3'), (('key1', 'key2'), 'val2'), (('key4', 'key5', 'key6'), 'val6')]
         )
 
