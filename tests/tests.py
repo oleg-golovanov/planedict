@@ -8,11 +8,7 @@ from collections import OrderedDict
 from planedict import PlaneDict
 
 
-PY3 = version_info.major == 3
-
-
-def get_list(arg):
-    return list(arg) if PY3 else arg
+PY33 = version_info[0:2] >= (3, 3)
 
 
 class PlaneTest(unittest.TestCase):
@@ -37,8 +33,8 @@ class PlaneTest(unittest.TestCase):
 
     def test_iter(self):
         self.assertEqual(
-            list(self.flat),
-            [('key1', 'key3'), ('key1', 'key2'), ('key4', 'key5', 'key6')]
+            set(self.flat),
+            {('key1', 'key2'), ('key1', 'key3'), ('key4', 'key5', 'key6')}
         )
 
     def test_len(self):
@@ -149,6 +145,7 @@ class PlaneTest(unittest.TestCase):
             None
         )
 
+    @unittest.skipIf(PY33, 'Dict randomize hashes in python3.3 and above')
     def test_popitem(self):
         self.assertEqual(
             self.flat.popitem(),
@@ -203,20 +200,20 @@ class PlaneTest(unittest.TestCase):
 
     def test_keys(self):
         self.assertEqual(
-            get_list(self.flat.keys()),
-            [('key1', 'key3'), ('key1', 'key2'), ('key4', 'key5', 'key6')]
+            set(self.flat.keys()),
+            {('key1', 'key2'), ('key1', 'key3'), ('key4', 'key5', 'key6')}
         )
 
     def test_values(self):
         self.assertEqual(
-            get_list(self.flat.values()),
-            ['val3', 'val2', 'val6']
+            set(self.flat.values()),
+            {'val2', 'val3', 'val6'}
         )
 
     def test_items(self):
         self.assertEqual(
-            get_list(self.flat.items()),
-            [(('key1', 'key3'), 'val3'), (('key1', 'key2'), 'val2'), (('key4', 'key5', 'key6'), 'val6')]
+            set(self.flat.items()),
+            {(('key1', 'key2'), 'val2'), (('key1', 'key3'), 'val3'), (('key4', 'key5', 'key6'), 'val6')}
         )
 
     def test_contains(self):
@@ -244,6 +241,16 @@ class PlaneTest(unittest.TestCase):
 
 
 class PlaneOrderTest(unittest.TestCase):
+    def setUp(self):
+        self.items = (
+            (('key1', 'key2'), 'val2'),
+            (('key1', 'key3'), 'val3'),
+            (('key4', 'key5', 'key6'), 'val6')
+        )
+        self.ordered_flat = PlaneDict(_factory=OrderedDict)
+        for k, v in self.items:
+            self.ordered_flat[k] = v
+
     def test_order(self):
         order = OrderedDict([
             ['key1', OrderedDict([
@@ -252,25 +259,35 @@ class PlaneOrderTest(unittest.TestCase):
             ])],
             ['key4', OrderedDict([
                 ['key5', OrderedDict([
-                    ['key6', 'val6'],
-                    ['key7', 'val7']
+                    ['key6', 'val6']
                 ])]
             ])]
         ])
-
-        items = (
-            (('key1', 'key2'), 'val2'),
-            (('key1', 'key3'), 'val3'),
-            (('key4', 'key5', 'key6'), 'val6'),
-            (('key4', 'key5', 'key7'), 'val7')
+        self.assertEqual(
+            self.ordered_flat.__dict__,
+            order
         )
-        flat = PlaneDict(_factory=OrderedDict)
-        for k, v in items:
-            flat[k] = v
+
+    @unittest.skipUnless(PY33, 'PlaneTest.test_popitem executed')
+    def test_popitem(self):
+        self.assertEqual(
+            self.ordered_flat.popitem(),
+            self.items[0]
+        )
 
         self.assertEqual(
-            flat.__dict__,
-            order
+            self.ordered_flat.popitem(),
+            self.items[1]
+        )
+
+        self.assertEqual(
+            self.ordered_flat.popitem(),
+            self.items[2]
+        )
+
+        self.assertRaises(
+            KeyError,
+            self.ordered_flat.popitem
         )
 
 

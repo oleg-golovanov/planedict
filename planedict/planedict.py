@@ -159,7 +159,8 @@ from collections import MutableMapping, Iterable
 NoneType = type(None)
 
 
-PY3 = version_info.major == 3
+PY3 = version_info[0] == 3
+PY33 = version_info[0:2] >= (3, 3)
 if PY3:
     def iteritems(d):
         return iter(d.items())
@@ -174,6 +175,8 @@ class PlaneDict(MutableMapping):
     __slots__ = (
         '_factory',
     )
+    if PY33:
+        __slots__ += ('__dict__', )
 
     def __init__(self, seq=None, _factory=dict, **kwargs):
         """
