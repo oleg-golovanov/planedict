@@ -1,6 +1,8 @@
 PlaneDict
 ---------
 
+|Version| |Status| |Coverage| |Downloads| |License|
+
 PlaneDict is a dict-like class which represents built-in dict class
 as a 'plane' structure, i.e. path-value pairs. Path is a tuple of keys,
 value is a value which allows in built-in dict.
@@ -171,3 +173,14 @@ License
 -------
 
 MIT licensed. See the bundled `LICENSE <https://github.com/oleg-golovanov/planedict/blob/master/LICENSE>`_ file for more details.
+
+.. |Version| image:: https://img.shields.io/pypi/v/planedict.svg
+    :target: https://pypi.python.org/pypi/planedict
+.. |Status| image:: https://img.shields.io/travis/oleg-golovanov/planedict.svg
+    :target: https://travis-ci.org/oleg-golovanov/planedict
+.. |Coverage| image:: https://img.shields.io/coveralls/oleg-golovanov/planedict.svg
+    :target: https://coveralls.io/github/oleg-golovanov/planedict
+.. |Downloads| image:: https://img.shields.io/pypi/dm/planedict.svg
+    :target: https://pypi.python.org/pypi/planedict
+.. |License| image:: https://img.shields.io/github/license/oleg-golovanov/planedict.svg
+    :target: https://github.com/oleg-golovanov/planedict/blob/master/LICENSE
