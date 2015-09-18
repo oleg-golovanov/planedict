@@ -2,13 +2,9 @@
 
 
 import unittest
-from sys import version_info
 from collections import OrderedDict
 
 from planedict import PlaneDict
-
-
-PY33 = version_info[0:2] >= (3, 3)
 
 
 class PlaneTest(unittest.TestCase):
@@ -145,28 +141,6 @@ class PlaneTest(unittest.TestCase):
             None
         )
 
-    @unittest.skipIf(PY33, 'Dict randomize hashes in python3.3 and above')
-    def test_popitem(self):
-        self.assertEqual(
-            self.flat.popitem(),
-            (('key1', 'key3'), 'val3')
-        )
-
-        self.assertEqual(
-            self.flat.popitem(),
-            (('key1', 'key2'), 'val2')
-        )
-
-        self.assertEqual(
-            self.flat.popitem(),
-            (('key4', 'key5', 'key6'), 'val6')
-        )
-
-        self.assertRaises(
-            KeyError,
-            self.flat.popitem
-        )
-
     def test_setdefault(self):
         self.assertEqual(
             self.flat.setdefault(['key1', 'key2'], default=None),
@@ -268,7 +242,7 @@ class PlaneOrderTest(unittest.TestCase):
             order
         )
 
-    @unittest.skipUnless(PY33, 'PlaneTest.test_popitem executed')
+    # inherited method
     def test_popitem(self):
         self.assertEqual(
             self.ordered_flat.popitem(),
