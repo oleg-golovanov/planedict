@@ -11,6 +11,8 @@ python:
 
 install:
   - pip install .
+  - if [ "$TRAVIS_PYTHON_VERSION" == "3.2" ]; then pip install coverage==3.7.1; fi
+  - if [ "$TRAVIS_PYTHON_VERSION" != "3.2" ]; then pip install coverage; fi
   - pip install coveralls
 
 script:
