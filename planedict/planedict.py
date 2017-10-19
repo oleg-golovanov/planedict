@@ -40,7 +40,7 @@ NOTES:
     2. After removing value by path, if higher dicts will become
        empty, they will be removed.
     3. get method has stddict parameter. If it's True then method will return
-       built-in dict, it will return PlaneDict object else.
+       built-in dict, it will return PlaneDict object or object inherited from it else.
     4. If PlaneDict object was passed to update method, it's a 'soft'
        update, i.e. the intersecting values will be overridden and the new
        values will be added.
@@ -173,7 +173,8 @@ class PlaneDict(MutableMapping):
 
     __slots__ = (
         '_factory',
-        '_dict'
+        '_dict',
+        '_type'
     )
 
     def __init__(self, seq=None, _factory=dict, **kwargs):
@@ -186,6 +187,7 @@ class PlaneDict(MutableMapping):
 
         self._factory = _factory
         self._dict = _factory()
+        self._type = type(self)
 
         self._dict.update(seq or [], **kwargs)
 
@@ -197,12 +199,12 @@ class PlaneDict(MutableMapping):
         items = self._dict
 
         for key in self.__check_path__(path):
-            if not isinstance(items, (dict, PlaneDict)):
+            if not isinstance(items, (dict, self._type)):
                 raise KeyError(key)
             items = items[key]
 
         if isinstance(items, dict):
-            items = PlaneDict(items)
+            items = self._type(items)
 
         return items
 
@@ -300,11 +302,11 @@ class PlaneDict(MutableMapping):
         """
         Same as a dict class method.
         If stddict parameter is True then method will return built-in dict,
-        it will return PlaneDict object else.
+        it will return PlaneDict object or object inherited from it else.
         """
 
-        result = super(PlaneDict, self).get(key, default)
-        if isinstance(result, PlaneDict) and stddict:
+        result = super(self._type, self).get(key, default)
+        if isinstance(result, self._type) and stddict:
             result = result._dict
 
         return result
