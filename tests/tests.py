@@ -42,7 +42,7 @@ class PlaneTest(unittest.TestCase):
     def test_repr(self):
         self.assertEqual(
             repr(self.flat),
-            repr(self.flat.__dict__)
+            repr(self.flat._dict)
         )
 
     def test_getitem(self):
@@ -162,13 +162,13 @@ class PlaneTest(unittest.TestCase):
 
         self.flat.update(PlaneDict(update))
         self.assertEqual(
-            self.flat.__dict__,
+            self.flat._dict,
             {'key1': {'key2': 'val2', 'key3': 'val3', 'key10': 'val10'}, 'key4': {'key5': {'key6': 'val6'}}}
         )
 
         self.flat.update(update)
         self.assertEqual(
-            self.flat.__dict__,
+            self.flat._dict,
             {'key1': {'key10': 'val10'}, 'key4': {'key5': {'key6': 'val6'}}}
         )
 
@@ -238,7 +238,7 @@ class PlaneOrderTest(unittest.TestCase):
             ])]
         ])
         self.assertEqual(
-            self.ordered_flat.__dict__,
+            self.ordered_flat._dict,
             order
         )
 

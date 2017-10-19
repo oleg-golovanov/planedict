@@ -160,7 +160,6 @@ NoneType = type(None)
 
 
 PY3 = version_info[0] == 3
-PY33 = version_info[0:2] >= (3, 3)
 if PY3:
     def iteritems(d):
         return iter(d.items())
@@ -174,9 +173,8 @@ class PlaneDict(MutableMapping):
 
     __slots__ = (
         '_factory',
+        '_dict'
     )
-    if PY33:
-        __slots__ += ('__dict__', )
 
     def __init__(self, seq=None, _factory=dict, **kwargs):
         """
@@ -187,16 +185,16 @@ class PlaneDict(MutableMapping):
         """
 
         self._factory = _factory
-        self.__dict__ = _factory()
+        self._dict = _factory()
 
-        self.__dict__.update(seq or [], **kwargs)
+        self._dict.update(seq or [], **kwargs)
 
     def __getitem__(self, path):
         """
         Get value by path.
         """
 
-        items = self.__dict__
+        items = self._dict
 
         for key in self.__check_path__(path):
             if not isinstance(items, (dict, PlaneDict)):
@@ -226,7 +224,7 @@ class PlaneDict(MutableMapping):
                     d[k] = self._factory()
                 set_key(d[k], p[1:])
 
-        set_key(self.__dict__, path)
+        set_key(self._dict, path)
 
     def __delitem__(self, path):
         """
@@ -258,7 +256,7 @@ class PlaneDict(MutableMapping):
                 del d[k]
                 return is_empty(d)
 
-        remove_key(self.__dict__, path)
+        remove_key(self._dict, path)
 
     def __iter__(self):
         """
@@ -279,7 +277,7 @@ class PlaneDict(MutableMapping):
                 else:
                     result.append(tuple(next_p))
 
-        recurs_iter(self.__dict__)
+        recurs_iter(self._dict)
 
         return iter(result)
 
@@ -296,7 +294,7 @@ class PlaneDict(MutableMapping):
         representation of built-in dict class.
         """
 
-        return repr(self.__dict__)
+        return repr(self._dict)
 
     def get(self, key, default=None, stddict=False):
         """
@@ -307,7 +305,7 @@ class PlaneDict(MutableMapping):
 
         result = super(PlaneDict, self).get(key, default)
         if isinstance(result, PlaneDict) and stddict:
-            result = result.__dict__
+            result = result._dict
 
         return result
 
