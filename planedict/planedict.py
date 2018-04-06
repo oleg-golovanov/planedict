@@ -152,14 +152,14 @@ EXAMPLES:
 """
 
 
-from sys import version_info
-from collections import MutableMapping, Iterable
+import sys
+import collections
 
 
 NoneType = type(None)
 
 
-PY3 = version_info[0] == 3
+PY3 = sys.version_info[0] == 3
 if PY3:
     def iteritems(d):
         return iter(d.items())
@@ -169,7 +169,7 @@ else:
     iteritems = methodcaller('iteritems')
 
 
-class PlaneDict(MutableMapping):
+class PlaneDict(collections.MutableMapping):
 
     __slots__ = (
         '_factory',
@@ -324,7 +324,7 @@ class PlaneDict(MutableMapping):
         def seq_iter(iterable):
             result = []
             for p in iterable:
-                if isinstance(p, Iterable) and \
+                if isinstance(p, collections.Iterable) and \
                         not isinstance(p, (basestring, tuple)):
                     result += seq_iter(p)
                 else:
