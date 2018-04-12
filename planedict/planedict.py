@@ -336,3 +336,44 @@ class PlaneDict(collections.MutableMapping):
             return path,
         else:
             return tuple(seq_iter(path))
+
+
+class PlaneAttrDict(PlaneDict):
+
+    __slots__ = PlaneDict.__slots__ + ('_root', '_path')
+
+    def __init__(self, *args, **kwargs):
+        super(PlaneAttrDict, self).__init__(*args, **kwargs)
+        self._root = None
+        self._path = ()
+
+    def __getattr__(self, name):
+        """
+        Get a named attribute.
+        """
+
+        try:
+            res = super(PlaneAttrDict, self).__getitem__(name)
+            if isinstance(res, self._type):
+                res._root = self._root or self
+                res._path = self._path + (name, )
+            return res
+        except KeyError:
+            raise AttributeError(
+                "'{}' object has no attribute '{}'".format(self._type.__name__, name)
+            )
+
+    def __setattr__(self, name, value):
+        """
+        Sets the named attribute to the specified value.
+        """
+
+        s = super(PlaneAttrDict, self)
+        # if statement looks like this because the first occurrence starts working when
+        # the object is initialized and not all attributes are still defined
+        if name in self.__slots__:
+            s.__setattr__(name, value)
+        else:
+            s.__setitem__(name, value)
+            if self._root is not None:
+                self._root.__setitem__(self._path + (name, ), value)
