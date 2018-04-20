@@ -176,6 +176,8 @@ class PlaneDict(collections.MutableMapping):
         '_dict',
         '_type'
     )
+    if PY3:
+        __slots__ = __slots__ + ('__weakref__', )
 
     def __init__(self, seq=None, _factory=dict, **kwargs):
         """
@@ -340,7 +342,7 @@ class PlaneDict(collections.MutableMapping):
 
 class PlaneAttrDict(PlaneDict):
 
-    __slots__ = PlaneDict.__slots__ + ('_root', '_path')
+    __slots__ = ('_root', '_path')
 
     def __init__(self, *args, **kwargs):
         super(PlaneAttrDict, self).__init__(*args, **kwargs)
@@ -368,12 +370,22 @@ class PlaneAttrDict(PlaneDict):
         Sets the named attribute to the specified value.
         """
 
+        def slots():
+            res = []
+            for c in type(self).__mro__:
+                try:
+                    res.extend(c.__slots__)
+                except AttributeError:
+                    continue
+
+            return tuple(res)
+
         s = super(PlaneAttrDict, self)
-        # if statement looks like this because the first occurrence starts working when
-        # the object is initialized and not all attributes are still defined
-        if name in self.__slots__:
+        try:
+            if not PY3 and name not in slots():
+                raise AttributeError
             s.__setattr__(name, value)
-        else:
+        except AttributeError:
             s.__setitem__(name, value)
             if self._root is not None:
                 self._root.__setitem__(self._path + (name, ), value)
