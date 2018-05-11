@@ -160,6 +160,7 @@ NoneType = type(None)
 
 
 PY3 = sys.version_info[0] == 3
+PY33 = sys.version_info[0:2] >= (3, 3)
 if PY3:
     def iteritems(d):
         return iter(d.items())
@@ -176,6 +177,8 @@ class PlaneDict(collections.MutableMapping):
         '_dict',
         '_type'
     )
+    if PY33:
+        __slots__ += ('__weakref__',)
 
     def __init__(self, seq=None, _factory=dict, **kwargs):
         """

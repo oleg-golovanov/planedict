@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import weakref
 import unittest
 from collections import OrderedDict
 
@@ -211,6 +212,13 @@ class PlaneTest(unittest.TestCase):
         self.assertNotEqual(
             self.flat,
             PlaneDict(ne)
+        )
+
+    def test_weakref(self):
+        ref = weakref.ref(self.flat)
+        self.assertEqual(
+            self.flat,
+            ref()
         )
 
 
