@@ -5,7 +5,7 @@ import weakref
 import unittest
 from collections import OrderedDict
 
-from planedict import PlaneDict
+from planedict import PlaneDict, PlaneAttrDict
 
 
 class PlaneTest(unittest.TestCase):
@@ -223,6 +223,7 @@ class PlaneTest(unittest.TestCase):
 
 
 class PlaneOrderTest(unittest.TestCase):
+
     def setUp(self):
         self.items = (
             (('key1', 'key2'), 'val2'),
@@ -270,6 +271,52 @@ class PlaneOrderTest(unittest.TestCase):
         self.assertRaises(
             KeyError,
             self.ordered_flat.popitem
+        )
+
+
+class PlaneAttrTest(unittest.TestCase):
+
+    def setUp(self):
+        self.flat = PlaneAttrDict(
+            {'key1': {'key2': 'val2', 'key3': 'val3'}, 'key4': {'key5': {'key6': 'val6'}}}
+        )
+
+    def test_getattr(self):
+        self.assertEqual(
+            self.flat._factory,
+            dict
+        )
+
+        self.assertEqual(
+            self.flat.key4.key5.key6,
+            'val6'
+        )
+
+        self.assertRaises(
+            AttributeError,
+            self.flat.__getattr__,
+            'key7'
+        )
+
+    def test_setattr(self):
+        value = 1
+
+        self.flat.key4.key5.key7 = value
+        self.assertEqual(
+            self.flat.key4.key5.key7,
+            value
+        )
+
+        self.flat.key0 = value
+        self.assertEqual(
+            self.flat.key0,
+            value
+        )
+
+        self.flat._factory = OrderedDict
+        self.assertEqual(
+            self.flat._factory,
+            OrderedDict
         )
 
 

@@ -207,7 +207,10 @@ class PlaneDict(collections.MutableMapping):
             items = items[key]
 
         if isinstance(items, dict):
-            items = self._type(items)
+            # implementing standard dict behavior
+            o = self._type(_factory=self._factory)
+            o._dict = items
+            items = o
 
         return items
 
@@ -339,3 +342,42 @@ class PlaneDict(collections.MutableMapping):
             return path,
         else:
             return tuple(seq_iter(path))
+
+
+class PlaneAttrDict(PlaneDict):
+
+    __slots__ = ()
+
+    def __getattr__(self, name):
+        """
+        Get a named attribute.
+        """
+
+        try:
+            return super(PlaneAttrDict, self).__getitem__(name)
+        except KeyError:
+            raise AttributeError(
+                "'{}' object has no attribute '{}'".format(self._type.__name__, name)
+            )
+
+    def __setattr__(self, name, value):
+        """
+        Sets the named attribute to the specified value.
+        """
+
+        s = super(PlaneAttrDict, self)
+        try:
+            # workaround https://bugs.python.org/issue11333
+            if not PY33 and name not in self.__slots_mro__():
+                raise AttributeError
+            s.__setattr__(name, value)
+        except AttributeError:
+            s.__setitem__(name, value)
+
+    def __slots_mro__(self):
+        for c in type(self).__mro__:
+            try:
+                for s in c.__slots__:
+                    yield s
+            except AttributeError:
+                continue
